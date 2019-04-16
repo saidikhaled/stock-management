@@ -1,0 +1,27 @@
+body,
+html {
+	height: 100%;
+}
+
+.bg {
+	/* The image used */
+	background-image: url('/images/img2.jpg');
+
+	/* Center and scale the image nicely */
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-attachment: fixed;
+}
+
+.table_color {
+	color: dark;
+}
+.my-custom-scrollbar {
+	position: relative;
+	height: 500px;
+	overflow: auto;
+}
+.table-wrapper-scroll-y {
+	display: block;
+}
