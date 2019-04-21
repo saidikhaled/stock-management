@@ -26,10 +26,10 @@ router.get('/', (req, res) => {
     ];
 
     Matiere.find({})
-        .then((matiere) => {
-            console.log(matiere);
+        .then(docs => {
+            console.log(docs);
             res.render('ficheMatiere', {
-                TM: matiere
+                TM: docs
             });
         })
         .catch(err => {
@@ -40,20 +40,30 @@ router.get('/', (req, res) => {
         })
 });
 
+// save new matiere
 router.post('/', (req, res) => {
+    const data = req.body;
+    console.log("the data inside req.body", data);
     const matiere = new Matiere({
-        Magasin: 'B',
-        Reference: 10230002,
-        Designation: 'test',
-        UM: 'M',
-        Q_Stock: 500
+        Magasin: data.Magasin,
+        Reference: data.Reference,
+        Designation: data.Designation,
+        UM: data.UM,
+        Q_Stock: data.Q_Stock
     });
+    // const matiere = new Matiere({
+    //     Magasin: 'B',
+    //     Reference: 10230002,
+    //     Designation: 'test',
+    //     UM: 'M',
+    //     Q_Stock: 500
+    // });
     matiere.save()
         .then(result => {
             console.log(result);
             res.status(201).json({
                 message: "Handeling POST requests to /ficheMatiere",
-                createMatiere: matiere
+                createMatiere: result
             });
         })
         .catch(err => {
@@ -64,13 +74,21 @@ router.post('/', (req, res) => {
         });
 });
 
+
+// get by ID
 router.get("/:matiereId", (req, res, next) => {
     const id = req.params.matiereId;
     Matiere.findById(id)
         .exec()
         .then(doc => {
             console.log("From Database : ", doc);
-            res.status(200).json(doc);
+            if (doc) {
+                res.status(200).json(doc);
+            } else {
+                res.status(404).json({
+                    message: 'No valid entry found for provided ID'
+                })
+            }
         })
         .catch(err => {
             console.log(err);
@@ -79,4 +97,30 @@ router.get("/:matiereId", (req, res, next) => {
             });
         })
 })
+
+// update mmatiere
+router.patch("/:matiereId", (req, res, next) => {
+    const id = req.params.matiereId;
+    const updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    Matiere.update({
+            _id: id
+        }, {
+            $set: updateOps
+        })
+        .then(result => {
+            console.log(result);
+            res.status(201).json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        })
+})
+
+
 module.exports = router;
