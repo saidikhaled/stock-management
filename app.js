@@ -75,21 +75,7 @@ app.use((req, res, next) => {
 
 app.use('/', require('./routes/index'));
 app.use('/users', require('./routes/users'));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.use('/ficheMatiere', require('./routes/ficheMatiere'));
 
 
 
