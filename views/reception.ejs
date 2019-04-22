@@ -6,24 +6,37 @@
 
                 <thead class=" thead-dark ">
                     <tr>
-                        <th scope=" col ">Fam</th>
-                        <th scope=" col">code</th>
-                        <th scope="col">Libelé</th>
-                        <th scope="col">Reference</th>
+                        <th scope=" col ">Magasin</th>
+                        <th scope=" col ">Code</th>
+                        <th scope=" col">Designation</th>
+                        <th scope="col">UM</th>
+                        <th scope="col ">Quant stock</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% for(let i =0; i < 20 ; i++) { %>
+                    <% TM.forEach(function (element) { %>
                     <tr>
-                        <th scope="row"> 1</th>
-                        <td><%= i%></td>
-                        <td><%= i+1 %></td>
-                        <td>lol</td>
+                        <th scope="row"><%= element.Magasin %></th>
+                        <td><%= element.Reference %></td>
+                        <td><%= element.Designation %></td>
+                        <td><%= element.UM %></td>
+                        <td><%= element.Q_Stock %></td>
                     </tr>
-                    <% }  %>
+                    <% } ) %>
                 </tbody>
             </table>
+
+        </div>
+
+        <div class="col-md-5 mr-auto ">
+            <form action="/ficheMatiere/reception" method="GET" class="form-inline">
+                <div class="form-group">
+                    <input type="search" name="search" placeholder="search matière" class="form-control mr-2">
+                    <input type="submit" value="Search" class="btn btn-primary">
+                </div>
+            </form>
         </div>
     </div>
+
 
 </section>

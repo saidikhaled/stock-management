@@ -7,17 +7,49 @@ const Matiere = require('../models/Matiere');
 
 // reception
 router.get('/reception', (req, res, next) => {
-	res.render('reception');
+	console.log(req.query.search);
+	if (req.query.search) {
+		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+		Matiere.find({ $or: [ { Magasin: regex }, { Designation: regex } ] })
+			.then((docs) => {
+				console.log(docs);
+				res.render('reception', {
+					TM : docs
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({
+					error : err
+				});
+			});
+	} else {
+		Matiere.find({})
+			.then((docs) => {
+				console.log(docs);
+				res.render('reception', {
+					TM : docs
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({
+					error : err
+				});
+			});
+	}
 });
 
-// get
+// get render fiche matiere
 router.get('/', (req, res) => {
 	Matiere.find({})
 		.then((docs) => {
 			console.log(docs);
-			res.render('ficheMatiere', {
-				TM : docs
-			});
+			if (docs.Magasin !== null) {
+				res.render('ficheMatiere', {
+					TM : docs
+				});
+			}
 		})
 		.catch((err) => {
 			console.log(err);
@@ -111,5 +143,40 @@ router.patch('/:matiereId', (req, res, next) => {
 			});
 		});
 });
+
+// search
+router.get('/search', (req, res, next) => {
+	const q = req.query.search;
+	//full text search using $text
+	Matiere.find(
+		{
+			$texr : {
+				$search : q
+			}
+		},
+		{ _id: 0, _v: 0 },
+		(err, data) => {
+			res.json(data);
+		}
+	);
+
+	//partial text search using regex
+
+	// Matiere.find(
+	// 	{
+	// 		Reference : {
+	// 			$regex : new RegExp(q)
+	// 		}
+	// 	},
+	// 	{ _id: 0, _v: 0 },
+	// 	(err, data) => {
+	// 		res.json(data);
+	// 	}
+	// ).limit(10);
+});
+
+function escapeRegex (text) {
+	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
 
 module.exports = router;
