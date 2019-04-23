@@ -1,33 +1,63 @@
 <section class="container-fluid">
     <div id="marginTopT" class="row h-50">
         <div class="col-md-5   ml-lg-4  mr-auto ">
+            <% include ./partials/messages %>
+            <form action="/ficheMatiere/reception" method="POST">
+                <table class="table table-sm table-striped table-hover bg-light">
 
-            <table class="table table-sm table-striped table-hover bg-light">
+                    <thead class=" thead-dark ">
+                        <tr>
+                            <th scope=" col ">Magasin</th>
+                            <th scope=" col ">Famille</th>
+                            <th scope=" col ">Code</th>
+                            <th scope=" col">Designation</th>
+                            <th scope="col">UM</th>
+                            <th scope="col ">Quant stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i = 0; i<20 ; i++) { %>
+                        <tr>
+                            <th scope="row">
+                                <input type="text" name="Magasin" class="form-control"
+                                    value="<%= typeof Magasin != 'undefined' ? Magasin : '' %> " required />
+                                <div class="invalid-feedback">
+                                    Please provide a valid Magasin.
+                                </div>
+                            </th>
+                            <th>
+                                <input type="text" name="Famille" class="form-control"
+                                    value="<%= typeof Famille != 'undefined' ? Famille : '' %> " />
 
-                <thead class=" thead-dark ">
-                    <tr>
-                        <th scope=" col ">Magasin</th>
-                        <th scope=" col ">Code</th>
-                        <th scope=" col">Designation</th>
-                        <th scope="col">UM</th>
-                        <th scope="col ">Quant stock</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% TM.forEach(function (element) { %>
-                    <tr>
-                        <th scope="row"><%= element.Magasin %></th>
-                        <td><%= element.Reference %></td>
-                        <td><%= element.Designation %></td>
-                        <td><%= element.UM %></td>
-                        <td><%= element.Q_Stock %></td>
-                    </tr>
-                    <% } ) %>
-                </tbody>
-            </table>
+                            </th>
+                            <td>
+                                <input type="text" name="Reference" class="form-control"
+                                    value="<%= typeof Reference != 'undefined' ? Reference : '' %> " />
 
+                            </td>
+                            <td>
+                                <input type="text" name="Designation" class="form-control"
+                                    value="<%= typeof Designation != 'undefined' ? Designation : '' %>" />
+
+                            </td>
+                            <td>
+                                <input type="text" name="UM" class="form-control"
+                                    value="<%= typeof UM != 'undefined' ? UM : '' %>" />
+
+                            </td>
+                            <td>
+                                <input type="text" name="Q_Stock" class="form-control"
+                                    value="<%= typeof Q_Stock != 'undefined' ? Q_Stock : ''  %>" />
+
+                            </td>
+                        </tr>
+                        <% }  %> </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary btn-block ">
+                    Enregistrer
+                </button>
+            </form>
         </div>
-
         <div class="col-md-5 mr-auto ">
             <form action="/ficheMatiere/reception" method="GET" class="form-inline">
                 <div class="form-group">
@@ -40,3 +70,25 @@
 
 
 </section>
+
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

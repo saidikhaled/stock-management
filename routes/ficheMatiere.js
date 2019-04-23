@@ -6,39 +6,6 @@ const mongoose = require('mongoose');
 const Matiere = require('../models/Matiere');
 
 // reception
-router.get('/reception', (req, res, next) => {
-	console.log(req.query.search);
-	if (req.query.search) {
-		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-		Matiere.find({ $or: [ { Magasin: regex }, { Designation: regex } ] })
-			.then((docs) => {
-				console.log(docs);
-				res.render('reception', {
-					TM : docs
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-				res.status(500).json({
-					error : err
-				});
-			});
-	} else {
-		Matiere.find({})
-			.then((docs) => {
-				console.log(docs);
-				res.render('reception', {
-					TM : docs
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-				res.status(500).json({
-					error : err
-				});
-			});
-	}
-});
 
 // get render fiche matiere
 router.get('/', (req, res) => {
@@ -59,41 +26,91 @@ router.get('/', (req, res) => {
 		});
 });
 
-// save new matiere
-router.post('/', (req, res) => {
-	const data = req.body;
-	console.log('the data inside req.body', data);
-	const matiere = new Matiere({
-		Magasin     : data.Magasin,
-		Reference   : data.Reference,
-		Designation : data.Designation,
-		UM          : data.UM,
-		Q_Stock     : data.Q_Stock
-	});
-	// const matiere = new Matiere({
-	//     Magasin: 'B',
-	//     Reference: 10230002,
-	//     Designation: 'test',
-	//     UM: 'M',
-	//     Q_Stock: 500
-	// });
-	matiere
-		.save()
-		.then((result) => {
-			console.log(result);
-			res.status(201).json({
-				message       : 'Handeling POST requests to /ficheMatiere',
-				createMatiere : result
-			});
-		})
-		.catch((err) => {
-			console.log(err);
-			res.status(500).json({
-				error : err
-			});
-		});
+// get reception
+router.get('/reception', (req, res) => {
+	res.render('reception');
 });
 
+// save new matiere
+router.post('/reception', (req, res) => {
+	const { Famille, Magasin, Reference, Designation, UM, Q_Stock } = req.body;
+	let errorsRec = [];
+
+	//cheking for errors
+	for (let i = 0; i < 20; i++) {
+		if (req.body.Reference[i] !== ' ') {
+			//cheking if there is an empty field
+			if (!Famille[i] || !Magasin[i] || !Reference[i] || !Designation[i] || !UM[i] || !Q_Stock[i]) {
+				console.log('please fill in all the fields');
+				errorsRec.push({
+					msg : 'please fill in all the fields'
+				});
+			}
+			// check the length of Reference
+			if (Reference[i].length < 8) {
+				console.log('Reference should be 8 numbers');
+				errorsRec.push({
+					msg : 'Reference should be 8 numbers'
+				});
+			}
+		}
+	}
+	console.log(errorsRec);
+
+	const data = [];
+
+	for (let i = 0; i < 20; i++) {
+		if (req.body.Reference[i] !== ' ') {
+			const newMatiere = {};
+			newMatiere.Magasin = req.body.Magasin[i];
+			newMatiere.Famille = req.body.Famille[i];
+			newMatiere.Reference = req.body.Reference[i];
+			newMatiere.Designation = req.body.Designation[i];
+			newMatiere.UM = req.body.UM[i];
+			newMatiere.Q_Stock = req.body.Q_Stock[i];
+
+			data.push(newMatiere);
+		}
+	}
+
+	console.log('this is the data array legnth :', data.length);
+	// Matiere.collection.insert(data, function (err, docs) {
+	// 	if (err) {
+	// 		return console.error(err);
+	// 	} else {
+	// 		console.log('Multiple documents inserted to Collection');
+	// 	}
+	// });
+	//
+
+	// check if there are any errors
+	if (errorsRec.length > 0) {
+		res.render('reception', {
+			errorsRec
+		});
+	} else {
+		res.render('reception');
+	}
+	// 	const newMatiere = new Matiere({
+	// 		Famille,
+	// 		Magasin,
+	// 		Reference,
+	// 		Designation,
+	// 		UM,
+	// 		Q_Stock
+	// 	});
+	// 	console.log('this is the content of req body', req.body);
+	// 	newMatiere
+	// 		.save()
+	// 		.then((result) => {
+	// 			console.log('this is result after save', result);
+	// 			res.redirect('ficheMatiere');
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log(err);
+	// 		});
+	// }
+});
 // get by ID
 router.get('/:matiereId', (req, res, next) => {
 	const id = req.params.matiereId;
@@ -117,16 +134,15 @@ router.get('/:matiereId', (req, res, next) => {
 		});
 });
 
-// update mmatiere
-router.patch('/:matiereId', (req, res, next) => {
-	const id = req.params.matiereId;
+router.patch('/', (req, res, next) => {
 	const updateOps = {};
 	for (const ops of req.body) {
 		updateOps[ops.propName] = ops.value;
 	}
+
 	Matiere.update(
 		{
-			_id : id
+			Reference : Ref
 		},
 		{
 			$set : updateOps
@@ -143,7 +159,27 @@ router.patch('/:matiereId', (req, res, next) => {
 			});
 		});
 });
-
+// update matiere
+function updateMatiere (Ref) {
+	Matiere.update(
+		{
+			Reference : Ref
+		},
+		{
+			$set : Q_Stock
+		}
+	)
+		.then((result) => {
+			console.log(result);
+			res.status(201).json(result);
+		})
+		.catch((err) => {
+			console.log(err);
+			res.status(500).json({
+				error : err
+			});
+		});
+}
 // search
 router.get('/search', (req, res, next) => {
 	const q = req.query.search;

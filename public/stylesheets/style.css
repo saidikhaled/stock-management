@@ -25,6 +25,7 @@ tbody {
 	display: block;
 	height: 550px;
 	overflow: auto;
+	width: auto;
 }
 
 thead,
