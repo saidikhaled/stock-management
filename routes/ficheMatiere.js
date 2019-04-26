@@ -6,39 +6,6 @@ const mongoose = require('mongoose');
 const Matiere = require('../models/Matiere');
 
 // reception
-router.get('/reception', (req, res, next) => {
-	console.log(req.query.search);
-	if (req.query.search) {
-		const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-		Matiere.find({ $or: [ { Magasin: regex }, { Designation: regex } ] })
-			.then((docs) => {
-				console.log(docs);
-				res.render('reception', {
-					TM : docs
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-				res.status(500).json({
-					error : err
-				});
-			});
-	} else {
-		Matiere.find({})
-			.then((docs) => {
-				console.log(docs);
-				res.render('reception', {
-					TM : docs
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-				res.status(500).json({
-					error : err
-				});
-			});
-	}
-});
 
 // get render fiche matiere
 router.get('/', (req, res) => {
@@ -59,89 +26,67 @@ router.get('/', (req, res) => {
 		});
 });
 
-// save new matiere
-router.post('/', (req, res) => {
-	const data = req.body;
-	console.log('the data inside req.body', data);
-	const matiere = new Matiere({
-		Magasin     : data.Magasin,
-		Reference   : data.Reference,
-		Designation : data.Designation,
-		UM          : data.UM,
-		Q_Stock     : data.Q_Stock
-	});
-	// const matiere = new Matiere({
-	//     Magasin: 'B',
-	//     Reference: 10230002,
-	//     Designation: 'test',
-	//     UM: 'M',
-	//     Q_Stock: 500
-	// });
-	matiere
-		.save()
-		.then((result) => {
-			console.log(result);
-			res.status(201).json({
-				message       : 'Handeling POST requests to /ficheMatiere',
-				createMatiere : result
-			});
-		})
-		.catch((err) => {
-			console.log(err);
-			res.status(500).json({
-				error : err
-			});
-		});
+// get reception
+router.get('/reception', (req, res) => {
+	res.render('reception');
 });
 
-// get by ID
-router.get('/:matiereId', (req, res, next) => {
-	const id = req.params.matiereId;
-	Matiere.findById(id)
-		.exec()
-		.then((doc) => {
-			console.log('From Database : ', doc);
-			if (doc) {
-				res.status(200).json(doc);
-			} else {
-				res.status(404).json({
-					message : 'No valid entry found for provided ID'
+// save new matiere
+// post reception
+router.post('/reception', (req, res) => {
+	const { Famille, Magasin, Reference, Designation, UM, Q_Stock } = req.body;
+	let errorsRec = [];
+
+	//cheking for errors
+	for (let i = 0; i < 20; i++) {
+		if (req.body.Reference[i] !== ' ') {
+			//cheking if there is an empty field
+			if (!Famille[i] || !Magasin[i] || !Reference[i] || !Designation[i] || !UM[i] || !Q_Stock[i]) {
+				console.log('please fill in all the fields');
+				errorsRec.push({
+					msg : 'please fill in all the fields'
 				});
 			}
-		})
-		.catch((err) => {
-			console.log(err);
-			res.status(500).json({
-				error : err
-			});
-		});
-});
-
-// update mmatiere
-router.patch('/:matiereId', (req, res, next) => {
-	const id = req.params.matiereId;
-	const updateOps = {};
-	for (const ops of req.body) {
-		updateOps[ops.propName] = ops.value;
-	}
-	Matiere.update(
-		{
-			_id : id
-		},
-		{
-			$set : updateOps
+			// check the length of Reference
+			if (Reference[i].length < 8) {
+				console.log('Reference should be 8 numbers');
+				errorsRec.push({
+					msg : 'Reference should be 8 numbers'
+				});
+			}
 		}
-	)
-		.then((result) => {
-			console.log(result);
-			res.status(201).json(result);
-		})
-		.catch((err) => {
-			console.log(err);
-			res.status(500).json({
-				error : err
-			});
+	}
+
+	const data = [];
+
+	// insert the data from the Form to an array
+	for (let i = 0; i < 20; i++) {
+		if (req.body.Reference[i] !== ' ') {
+			const newMatiere = {};
+			newMatiere.Magasin = req.body.Magasin[i];
+			newMatiere.Famille = req.body.Famille[i];
+			newMatiere.Reference = req.body.Reference[i];
+			newMatiere.Designation = req.body.Designation[i];
+			newMatiere.UM = req.body.UM[i];
+			newMatiere.Q_Stock = parseInt(req.body.Q_Stock[i], 10);
+
+			data.push(newMatiere);
+		}
+	}
+
+	// update the existing Matiere and upsert the not existing
+	for (let i = 0; i < data.length; i++) {
+		updateFunction(Matiere, (dt = data[i]));
+	}
+
+	// check if there were any errors then rendering
+	if (errorsRec.length > 0) {
+		res.render('reception', {
+			errorsRec
 		});
+	} else {
+		res.render('reception');
+	}
 });
 
 // search
@@ -150,7 +95,7 @@ router.get('/search', (req, res, next) => {
 	//full text search using $text
 	Matiere.find(
 		{
-			$texr : {
+			$text : {
 				$search : q
 			}
 		},
@@ -159,24 +104,31 @@ router.get('/search', (req, res, next) => {
 			res.json(data);
 		}
 	);
-
-	//partial text search using regex
-
-	// Matiere.find(
-	// 	{
-	// 		Reference : {
-	// 			$regex : new RegExp(q)
-	// 		}
-	// 	},
-	// 	{ _id: 0, _v: 0 },
-	// 	(err, data) => {
-	// 		res.json(data);
-	// 	}
-	// ).limit(10);
 });
 
 function escapeRegex (text) {
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+function updateFunction (model, dt) {
+	let query = { Reference: dt.Reference },
+		update = {
+			$inc : { Q_Stock: dt.Q_Stock },
+			$set : {
+				Magasin     : dt.Magasin,
+				Famille     : dt.Famille,
+				Designation : dt.Designation,
+				UM          : dt.UM
+			}
+		},
+		options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+	// Find the document
+	model.findOneAndUpdate(query, update, options, function (error, result) {
+		if (error) return;
+
+		//console.log('from inside the update  \n result : ' + result);
+	});
 }
 
 module.exports = router;

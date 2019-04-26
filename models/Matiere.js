@@ -2,23 +2,38 @@ const mongoose = require('mongoose');
 
 const MatiereSchema = new mongoose.Schema({
 	Magasin         : {
-		type : String
+		type     : String,
+		required : true,
+		trim     : true
 	},
 	Reference       : {
-		type : Number
+		type     : String,
+		required : true,
+		unique   : true,
+		trim     : true
 	},
 	Designation     : {
-		type : String
+		type     : String,
+		required : true,
+		trim     : true
+	},
+	Famille         : {
+		type     : String,
+		required : true,
+		trim     : true
 	},
 	UM              : {
-		type : String
+		type : String,
+		trim : true
 	},
 	Ref_fournisseur : {
-		type : String
+		type : String,
+		trim : true
 	},
 	Q_Stock         : {
-		type : Number,
-		min  : 0
+		type     : Number,
+		required : true,
+		min      : 0
 	},
 	PUMP            : {
 		type : Number
