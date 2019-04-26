@@ -76,7 +76,7 @@ router.post('/reception', (req, res) => {
 
 	// update the existing Matiere and upsert the not existing
 	for (let i = 0; i < data.length; i++) {
-		updateFunction(Matiere, (dt = data[i]));
+		updateFunctionR(Matiere, (dt = data[i]));
 	}
 
 	// check if there were any errors then rendering
@@ -87,6 +87,35 @@ router.post('/reception', (req, res) => {
 	} else {
 		res.render('reception');
 	}
+});
+
+//get sortie
+router.get('/sortie', (req, res) => {
+	res.render('sortie');
+});
+
+// post sortie
+router.post('/sortie', (req, res) => {
+	const data = [];
+
+	// insert the data from the Form to an array
+	for (let i = 0; i < 20; i++) {
+		if (req.body.Reference[i] !== ' ') {
+			const newMatiere = {};
+			newMatiere.Magasin = req.body.Magasin[i];
+			newMatiere.Reference = req.body.Reference[i];
+			newMatiere.Designation = req.body.Designation[i];
+			newMatiere.Q_Stock = -parseInt(req.body.Q_Stock[i], 10);
+
+			data.push(newMatiere);
+		}
+	}
+	console.log(data[0].Q_Stock);
+	console.log(data);
+	for (let i = 0; i < data.length; i++) {
+		updateFunctionS(Matiere, (dt = data[i]));
+	}
+	res.render('sortie');
 });
 
 // search
@@ -110,7 +139,7 @@ function escapeRegex (text) {
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
 
-function updateFunction (model, dt) {
+function updateFunctionR (model, dt) {
 	let query = { Reference: dt.Reference },
 		update = {
 			$inc : { Q_Stock: dt.Q_Stock },
@@ -120,6 +149,20 @@ function updateFunction (model, dt) {
 				Designation : dt.Designation,
 				UM          : dt.UM
 			}
+		},
+		options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+	// Find the document
+	model.findOneAndUpdate(query, update, options, function (error, result) {
+		if (error) return;
+
+		//console.log('from inside the update  \n result : ' + result);
+	});
+}
+function updateFunctionS (model, dt) {
+	let query = { Reference: dt.Reference },
+		update = {
+			$inc : { Q_Stock: dt.Q_Stock }
 		},
 		options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
