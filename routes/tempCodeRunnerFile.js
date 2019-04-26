@@ -1,1 +1,1 @@
-console.log(posts)
+console.log('this is the data array legnth :', data);

@@ -8,10 +8,8 @@
                     <thead class=" thead-dark ">
                         <tr>
                             <th scope=" col ">Magasin</th>
-                            <th scope=" col ">Famille</th>
                             <th scope=" col ">Code</th>
                             <th scope=" col">Designation</th>
-                            <th scope="col">UM</th>
                             <th scope="col ">Quant stock</th>
                         </tr>
                     </thead>
@@ -25,11 +23,7 @@
                                     Please provide a valid Magasin.
                                 </div>
                             </th>
-                            <th>
-                                <input type="text" name="Famille" class="form-control"
-                                    value="<%= typeof Famille != 'undefined' ? Famille : '' %> " />
 
-                            </th>
                             <td>
                                 <input type="text" name="Reference" class="form-control"
                                     value="<%= typeof Reference != 'undefined' ? Reference : '' %> " />
@@ -40,11 +34,7 @@
                                     value="<%= typeof Designation != 'undefined' ? Designation : '' %>" />
 
                             </td>
-                            <td>
-                                <input type="text" name="UM" class="form-control"
-                                    value="<%= typeof UM != 'undefined' ? UM : '' %>" />
 
-                            </td>
                             <td>
                                 <input type="text" name="Q_Stock" class="form-control"
                                     value="<%= typeof Q_Stock != 'undefined' ? Q_Stock : null  %>" />
