@@ -130,7 +130,7 @@ router.get('/search', (req, res, next) => {
 		},
 		{ _id: 0, _v: 0 },
 		(err, data) => {
-			res.json(data);
+			res.render('reception', { data });
 		}
 	);
 });

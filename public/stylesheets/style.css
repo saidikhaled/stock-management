@@ -23,7 +23,7 @@ html {
 
 tbody {
 	display: block;
-	height: 550px;
+	height: 535px;
 	overflow: auto;
 	width: auto;
 }
@@ -33,6 +33,13 @@ tbody tr {
 	display: table;
 	width: 100%;
 	table-layout: fixed;
+	text-align: center;
+}
+
+tbody td {
+
+	width: auto;
+	text-align: center;
 }
 
 #marginTopL {

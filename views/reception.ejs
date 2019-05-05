@@ -1,6 +1,9 @@
 <section class="container-fluid">
     <div id="marginTopT" class="row h-50">
-        <div class="col-md-5   ml-lg-4  mr-auto ">
+        <div class="col-md-1">
+            <h1 class="text-light">Reception</h1>
+        </div>
+        <div class="col-md-7    m-auto ">
             <% include ./partials/messages %>
             <form action="/ficheMatiere/reception" method="POST">
                 <table class="table table-sm table-striped table-hover bg-light">
@@ -21,9 +24,7 @@
                             <th scope="row">
                                 <input type="text" name="Magasin" class="form-control"
                                     value="<%= typeof Magasin != 'undefined' ? Magasin : '' %> " required />
-                                <div class="invalid-feedback">
-                                    Please provide a valid Magasin.
-                                </div>
+
                             </th>
                             <th>
                                 <input type="text" name="Famille" class="form-control"
@@ -59,37 +60,8 @@
                 </button>
             </form>
         </div>
-        <div class="col-md-5 mr-auto ">
-            <form action="/ficheMatiere/reception" method="GET" class="form-inline">
-                <div class="form-group">
-                    <input type="search" name="search" placeholder="search matière" class="form-control mr-2">
-                    <input type="submit" value="Search" class="btn btn-primary">
-                </div>
-            </form>
-        </div>
+
     </div>
 
 
 </section>
-
-
-<script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function () {
-        'use strict';
-        window.addEventListener('load', function () {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-            // Loop over them and prevent submission
-            var validation = Array.prototype.filter.call(forms, function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (form.checkValidity() === false) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        }, false);
-    })();
-</script>

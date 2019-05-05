@@ -1,6 +1,9 @@
 <section class="container-fluid">
     <div id="marginTopT" class="row h-50">
-        <div class="col-md-5   ml-lg-4  mr-auto ">
+        <div class="col-md 2">
+            <h1 class="text-light">Liste Matières</h1>
+        </div>
+        <div class="col-md-6   ml-lg-4  mr-auto ">
 
             <table class="table table-sm table-striped table-hover bg-light">
 
@@ -25,6 +28,14 @@
                     <% } ) %>
                 </tbody>
             </table>
+        </div>
+        <div class="col-md-3 mr-auto ">
+            <form action="/ficheMatiere/search" method="GET" class="form-inline">
+                <div class="form-group">
+                    <input type="search" name="search" placeholder="search matière" class="form-control mr-2">
+                    <input type="submit" value="Search" class="btn btn-primary">
+                </div>
+            </form>
         </div>
     </div>
 
